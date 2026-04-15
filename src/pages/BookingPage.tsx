@@ -5,10 +5,12 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 
 const liveProviders = [
-  { id: 'indigo', name: 'IndiGo Direct', rating: 4.8, reviewCount: '25k+', variance: 0 },
-  { id: 'google', name: 'Google Flights', rating: 4.9, reviewCount: '50k+', variance: -150 },
+  { id: 'makemytrip', name: 'MakeMyTrip', rating: 4.8, reviewCount: '1M+', variance: 0 },
+  { id: 'goibibo', name: 'Goibibo', rating: 4.7, reviewCount: '800k+', variance: -50 },
+  { id: 'paytm', name: 'Paytm Flights', rating: 4.6, reviewCount: '500k+', variance: -120 },
+  { id: 'cleartrip', name: 'Cleartrip', rating: 4.7, reviewCount: '200k+', variance: 80 },
   { id: 'skyscanner', name: 'Skyscanner', rating: 4.7, reviewCount: '12k+', variance: 120 },
-  { id: 'kayak', name: 'Kayak', rating: 4.6, reviewCount: '8k+', variance: 50 },
+  { id: 'indigo', name: 'Airline Direct', rating: 4.5, reviewCount: '25k+', variance: 200 },
 ];
 
 export const BookingPage = () => {
@@ -34,14 +36,17 @@ export const BookingPage = () => {
     const day = d.padStart(2, '0');
 
     switch(providerId) {
+      case 'makemytrip':
+        return `https://www.makemytrip.com/flight/search?itinerary=${dept}-${arr}-${day}/${month}/${year}&tripType=O&paxType=A-1_C-0_I-0&intl=false&cabinClass=E`;
+      case 'goibibo':
+        return `https://www.goibibo.com/flights/flight-search/?vt=1&showval=&Date-${day}%2F${month}%2F${year}&Query=${dept}-${arr}-1-0-0-E`;
+      case 'paytm':
+        return `https://tickets.paytm.com/flights/flightSearch/${dept}/${arr}/1/0/0/E/${year}-${month}-${day}`;
+      case 'cleartrip':
+        return `https://www.cleartrip.com/flights/results?adults=1&childs=0&infants=0&class=Economy&depart_date=${day}/${month}/${year}&from=${dept}&to=${arr}`;
       case 'skyscanner':
         return `https://www.skyscanner.co.in/transport/flights/${dept.toLowerCase()}/${arr.toLowerCase()}/${year.slice(2)}${month}${day}/`;
-      case 'kayak':
-        return `https://www.kayak.co.in/flights/${dept}-${arr}/${year}-${month}-${day}?sort=price_a`;
-      case 'google':
-        return `https://www.google.com/travel/flights?q=Flights%20to%20${arr}%20from%20${dept}%20on%20${year}-${month}-${day}`;
       case 'indigo':
-        // Reliable IndiGo deep search or Google Flight Airline bias fallback
         return `https://www.goindigo.in/booking/flight-select.html?origin=${dept}&destination=${arr}&departDate=${day}%2F${month}%2F${year}&adults=1`;
       default:
         return `https://www.google.com/travel/flights?q=Flights%20to%20${arr}%20from%20${dept}%20on%20${year}-${month}-${day}`;

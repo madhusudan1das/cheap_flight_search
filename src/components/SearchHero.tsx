@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plane, Building, CarFront, ArrowRightLeft } from 'lucide-react';
+import { Plane, Building, CarFront, ArrowRightLeft, MapPin } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { format } from 'date-fns';
 
@@ -10,16 +10,41 @@ export const SearchHero = () => {
   const [to, setTo] = useState(searchParams.get('to') || '');
   const [date, setDate] = useState(searchParams.get('date') || format(new Date(), 'yyyy-MM-dd'));
   
+  const [fromSuggestions, setFromSuggestions] = useState<any[]>([]);
+  const [toSuggestions, setToSuggestions] = useState<any[]>([]);
+  const [activeInput, setActiveInput] = useState<'from' | 'to' | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (from || to) {
-        // Debounce search update (could pre-fetch here if implementing true live search)
-      }
-    }, 500);
+    if (activeInput !== 'from' || !from.trim()) {
+      setFromSuggestions([]);
+      return;
+    }
+    const handler = setTimeout(async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/airports/search?q=${from}`);
+        const data = await res.json();
+        setFromSuggestions(data);
+      } catch (err) {}
+    }, 300);
     return () => clearTimeout(handler);
-  }, [from, to]);
+  }, [from, activeInput]);
+
+  useEffect(() => {
+    if (activeInput !== 'to' || !to.trim()) {
+      setToSuggestions([]);
+      return;
+    }
+    const handler = setTimeout(async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/airports/search?q=${to}`);
+        const data = await res.json();
+        setToSuggestions(data);
+      } catch (err) {}
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [to, activeInput]);
 
   const handleSearch = () => {
     const today = format(new Date(), 'yyyy-MM-dd');
@@ -61,7 +86,30 @@ export const SearchHero = () => {
           <div className="flex-1 flex items-center bg-transparent border-2 border-transparent rounded-lg relative hover:bg-gray-50 focus-within:bg-gray-50 focus-within:border-brand-blue focus-within:shadow-inner transition-all group">
             <div className="px-5 py-3 w-full">
               <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-0.5 group-focus-within:text-brand-blue transition-colors">From</label>
-              <input type="text" value={from} onChange={e => setFrom(e.target.value)} placeholder="Country, city or airport" className="w-full text-gray-900 font-bold focus:outline-none text-xl bg-transparent placeholder-gray-300" />
+              <input type="text" value={from} onChange={e => setFrom(e.target.value)} onFocus={() => setActiveInput('from')} onBlur={() => setTimeout(() => setActiveInput(null), 200)} placeholder="Country, city or airport" className="w-full text-gray-900 font-bold focus:outline-none text-xl bg-transparent placeholder-gray-300" />
+              {activeInput === 'from' && fromSuggestions.length > 0 && (
+                <div className="absolute top-[100%] left-0 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] border border-gray-100 overflow-hidden z-50">
+                  {fromSuggestions.map(airport => (
+                    <div 
+                      key={airport.code} 
+                      onMouseDown={() => { 
+                        setFrom(airport.code); 
+                        setActiveInput(null); 
+                      }}
+                      className="px-4 py-3 hover:bg-blue-50 cursor-pointer flex items-center gap-3 border-b border-gray-50 last:border-0"
+                    >
+                      <MapPin className="w-5 h-5 text-gray-400 shrink-0" />
+                      <div>
+                        <div className="font-bold text-gray-900 flex items-center gap-2">
+                           <span className="text-brand-blue bg-blue-50 px-1.5 py-0.5 rounded text-xs">{airport.code}</span>
+                           {airport.city}
+                        </div>
+                        <div className="text-sm text-gray-500 truncate">{airport.name}, {airport.country}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           
@@ -72,7 +120,30 @@ export const SearchHero = () => {
           <div className="flex-1 flex items-center bg-transparent border-2 border-transparent rounded-lg relative hover:bg-gray-50 focus-within:bg-gray-50 focus-within:border-brand-blue focus-within:shadow-inner transition-all group pl-8">
             <div className="px-5 py-3 w-full">
               <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-0.5 group-focus-within:text-brand-blue transition-colors">To</label>
-              <input type="text" value={to} onChange={e => setTo(e.target.value)} placeholder="Country, city or airport" className="w-full text-gray-900 font-bold focus:outline-none text-xl bg-transparent placeholder-gray-300" />
+              <input type="text" value={to} onChange={e => setTo(e.target.value)} onFocus={() => setActiveInput('to')} onBlur={() => setTimeout(() => setActiveInput(null), 200)} placeholder="Country, city or airport" className="w-full text-gray-900 font-bold focus:outline-none text-xl bg-transparent placeholder-gray-300" />
+              {activeInput === 'to' && toSuggestions.length > 0 && (
+                <div className="absolute top-[100%] left-0 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] border border-gray-100 overflow-hidden z-50">
+                  {toSuggestions.map(airport => (
+                    <div 
+                      key={airport.code} 
+                      onMouseDown={() => { 
+                        setTo(airport.code); 
+                        setActiveInput(null); 
+                      }}
+                      className="px-4 py-3 hover:bg-blue-50 cursor-pointer flex items-center gap-3 border-b border-gray-50 last:border-0"
+                    >
+                      <MapPin className="w-5 h-5 text-gray-400 shrink-0" />
+                      <div>
+                        <div className="font-bold text-gray-900 flex items-center gap-2">
+                           <span className="text-brand-blue bg-blue-50 px-1.5 py-0.5 rounded text-xs">{airport.code}</span>
+                           {airport.city}
+                        </div>
+                        <div className="text-sm text-gray-500 truncate">{airport.name}, {airport.country}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

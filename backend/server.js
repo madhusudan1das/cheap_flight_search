@@ -4,6 +4,7 @@ const Amadeus = require('amadeus');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Booking = require('./models/Booking');
+const airports = require('./data/airports');
 
 const app = express();
 app.use(cors());
@@ -29,6 +30,21 @@ const formatDuration = (ptString) => {
   const minutes = match[2] ? match[2].replace('M', '') : '00';
   return `${hours}h ${minutes}m`;
 };
+
+// GET /api/airports/search
+app.get('/api/airports/search', (req, res) => {
+  const query = (req.query.q || '').toLowerCase();
+  if (!query) {
+    return res.json([]);
+  }
+  const results = airports.filter(a => 
+    a.city.toLowerCase().includes(query) || 
+    a.code.toLowerCase().includes(query) || 
+    a.name.toLowerCase().includes(query) || 
+    a.country.toLowerCase().includes(query)
+  ).slice(0, 5);
+  res.json(results);
+});
 
 // GET /api/flights/search
 app.get('/api/flights/search', async (req, res) => {
