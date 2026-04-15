@@ -1,64 +1,60 @@
 import { ChevronDown } from 'lucide-react';
+import { useFlightStore } from '../store/useFlightStore';
 
 export const FilterSidebar = () => {
+  const { filters, toggleStopFilter, setMaxDepartureHour } = useFlightStore();
+
   return (
     <div className="w-64 flex-shrink-0 hidden lg:block pr-6">
-       <div className="bg-white rounded-lg shadow-sm p-4 mb-4 flex justify-between items-center cursor-pointer border border-border-light hover:shadow-md transition-shadow">
+       <div className="bg-white rounded-lg shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-4 mb-4 flex justify-between items-center cursor-pointer border border-border-light hover:shadow-md transition-shadow">
          <div className="flex gap-2 items-center">
-            <span className="font-bold flex items-center">Get Price Alerts</span>
+            <span className="font-black flex items-center text-brand-blue">ACTIVE FILTERS</span>
          </div>
        </div>
 
        <div className="mb-6 border-b border-border-light pb-6">
          <div className="flex justify-between items-center mb-3">
-           <h4 className="font-bold text-sm">Stops</h4>
-           <ChevronDown className="w-4 h-4 text-gray-500 cursor-pointer" />
+           <h4 className="font-bold text-sm text-gray-900">Stops</h4>
+           <ChevronDown className="w-4 h-4 text-gray-500" />
          </div>
          <label className="flex items-center gap-3 mb-3 cursor-pointer group">
-           <input type="checkbox" className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" defaultChecked />
-           <span className="text-sm group-hover:text-brand-blue transition-colors">Direct</span>
-           <span className="ml-auto text-xs text-text-gray">from ₹11,681</span>
+           <input type="checkbox" checked={filters.stops['0']} onChange={() => toggleStopFilter('0')} className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" />
+           <span className="text-sm group-hover:text-brand-blue font-medium transition-colors">Non-stop (Direct)</span>
          </label>
          <label className="flex items-center gap-3 mb-3 cursor-pointer group">
-           <input type="checkbox" className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" defaultChecked />
-           <span className="text-sm group-hover:text-brand-blue transition-colors">1 stop</span>
-           <span className="ml-auto text-xs text-text-gray">from ₹17,191</span>
+           <input type="checkbox" checked={filters.stops['1']} onChange={() => toggleStopFilter('1')} className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" />
+           <span className="text-sm group-hover:text-brand-blue font-medium transition-colors">1 stop</span>
          </label>
          <label className="flex items-center gap-3 mb-1 cursor-pointer group">
-           <input type="checkbox" className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" defaultChecked />
-           <span className="text-sm group-hover:text-brand-blue transition-colors">2+ stops</span>
-           <span className="ml-auto text-xs text-text-gray">from ₹13,705</span>
-         </label>
-       </div>
-       
-       <div className="mb-6 border-b border-border-light pb-6">
-         <div className="flex justify-between items-center mb-3">
-           <h4 className="font-bold text-sm">Baggage</h4>
-           <ChevronDown className="w-4 h-4 text-gray-500 cursor-pointer" />
-         </div>
-         <div className="flex gap-3 text-xs text-brand-blue mb-4 font-medium">
-           <button className="hover:underline">Select all</button>
-           <button className="hover:underline text-text-gray">Clear all</button>
-         </div>
-         <label className="flex items-center gap-3 mb-3 cursor-pointer text-sm group">
-           <input type="checkbox" className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" /> 
-           <span className="group-hover:text-brand-blue transition-colors">Cabin bag</span>
-         </label>
-         <label className="flex items-center gap-3 mb-1 cursor-pointer text-sm group">
-           <input type="checkbox" className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" /> 
-           <span className="group-hover:text-brand-blue transition-colors">Checked bag</span>
+           <input type="checkbox" checked={filters.stops['2+']} onChange={() => toggleStopFilter('2+')} className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" />
+           <span className="text-sm group-hover:text-brand-blue font-medium transition-colors">2+ stops</span>
          </label>
        </div>
 
        <div className="mb-6 border-b border-border-light pb-6">
          <div className="flex justify-between items-center mb-3">
-           <h4 className="font-bold text-sm">Departure times</h4>
-           <ChevronDown className="w-4 h-4 text-gray-500 cursor-pointer" />
+           <h4 className="font-bold text-sm text-gray-900">Departure time</h4>
+           <ChevronDown className="w-4 h-4 text-gray-500" />
          </div>
          <div className="mb-2">
-           <div className="text-xs font-semibold mb-1">Outbound</div>
-           <div className="text-xs text-text-gray mb-3">00:00 - 23:59</div>
-           <input type="range" className="w-full accent-brand-blue" min="0" max="24" defaultValue="24" />
+           <div className="flex justify-between items-end mb-3">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Outbound</div>
+              <div className="text-sm font-black text-brand-blue">Up to {filters.maxDepartureHour}:00</div>
+           </div>
+           <input 
+             type="range" 
+             value={filters.maxDepartureHour} 
+             onChange={(e) => setMaxDepartureHour(Number(e.target.value))} 
+             className="w-full accent-brand-blue cursor-pointer" 
+             min="0" 
+             max="24" 
+             step="1"
+           />
+           <div className="flex justify-between text-[10px] text-gray-400 font-bold mt-1">
+             <span>00:00</span>
+             <span>12:00</span>
+             <span>24:00</span>
+           </div>
          </div>
        </div>
 

@@ -46,6 +46,31 @@ app.get('/api/airports/search', (req, res) => {
   res.json(results);
 });
 
+// Helper for generating dynamic OTA pricing around base price
+const generateProviders = (basePrice) => {
+  const templates = [
+     { id: 'airline', name: 'Airline Direct', rating: 4.7, reviews: 45000, variance: 0 },
+     { id: 'makemytrip', name: 'MakeMyTrip', rating: 4.8, reviews: 1000000, variance: Math.floor(Math.random() * 150) - 40 },
+     { id: 'goibibo', name: 'Goibibo', rating: 4.7, reviews: 800000, variance: Math.floor(Math.random() * 200) - 80 },
+     { id: 'skyscanner', name: 'Skyscanner', rating: 4.8, reviews: 12000, variance: Math.floor(Math.random() * 100) + 10 },
+     { id: 'paytm', name: 'Paytm Flights', rating: 4.6, reviews: 500000, variance: Math.floor(Math.random() * 250) - 130 },
+     { id: 'cleartrip', name: 'Cleartrip', rating: 4.7, reviews: 200000, variance: Math.floor(Math.random() * 80) + 20 }
+  ];
+  
+  // Airline direct + 3 random OTAs
+  const shuffledOtas = templates.slice(1).sort(() => 0.5 - Math.random()).slice(0, 3);
+  const selected = [templates[0], ...shuffledOtas];
+  
+  return selected.map(p => ({
+     id: p.id,
+     name: p.name,
+     price: basePrice + p.variance,
+     rating: p.rating,
+     reviews: p.reviews,
+     support247: true
+  })).sort((a,b) => a.price - b.price);
+};
+
 // GET /api/flights/search
 app.get('/api/flights/search', async (req, res) => {
   const { from = 'DEL', to = 'BOM', date } = req.query;
@@ -94,7 +119,8 @@ app.get('/api/flights/search', async (req, res) => {
         stops: segments.length - 1,
         tags: offer.price.total < 6000 ? ['Cheapest'] : [],
         layovers: segments.length > 1 ? [segments[0].arrivalAirport] : [],
-        flightDate: searchDate
+        flightDate: searchDate,
+        providers: generateProviders(price)
       };
       
       // Store inside server ephemeral memory
@@ -133,7 +159,8 @@ app.get('/api/flights/search', async (req, res) => {
         stops: 0,
         tags: ['Cheapest', 'Direct'],
         layovers: [],
-        flightDate: searchDate
+        flightDate: searchDate,
+        providers: generateProviders(4000)
       },
       {
         id: flightId2,
@@ -155,7 +182,8 @@ app.get('/api/flights/search', async (req, res) => {
         stops: 0,
         tags: ['Fastest'],
         layovers: [],
-        flightDate: searchDate
+        flightDate: searchDate,
+        providers: generateProviders(6000)
       }
     ];
     

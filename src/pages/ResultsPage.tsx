@@ -8,7 +8,7 @@ import { Bell } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const ResultsPage = () => {
-  const { flights, loading, error, fetchFlights } = useFlightStore();
+  const { filteredFlights, loading, error, fetchFlights } = useFlightStore();
   const [searchParams] = useSearchParams();
   
   const from = searchParams.get('from') || 'DEL';
@@ -35,7 +35,7 @@ export const ResultsPage = () => {
             <FilterSidebar />
             <div className="flex-1 pb-16">
                <div className="flex justify-between items-center mb-6">
-                 <div className="text-sm text-text-gray"><span className="font-bold text-black text-lg">{flights.length} results</span> <span className="ml-2 bg-white px-2 py-1 rounded border border-gray-200 shadow-sm cursor-pointer hover:bg-gray-50">sorted by Best</span></div>
+                 <div className="text-sm text-text-gray"><span className="font-bold text-black text-lg">{filteredFlights.length} results</span> <span className="ml-2 bg-white px-2 py-1 rounded border border-gray-200 shadow-sm cursor-pointer hover:bg-gray-50">sorted by Lowest Price</span></div>
                </div>
                
                {error && <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200 mb-4">{error}</div>}
@@ -52,8 +52,8 @@ export const ResultsPage = () => {
                         </div>
                      </div>
                    ))
-                 ) : flights.length > 0 ? (
-                   flights.map((flight) => (
+                 ) : filteredFlights.length > 0 ? (
+                   filteredFlights.map((flight) => (
                      <FlightCard key={flight.id || flight._id} flight={flight} />
                    ))
                  ) : (
@@ -64,7 +64,7 @@ export const ResultsPage = () => {
                  )}
                </div>
                
-               {flights.length > 0 && (
+               {filteredFlights.length > 0 && (
                  <div className="mt-8 bg-blue-50 border border-blue-100 rounded-lg p-8 flex flex-col items-center justify-center text-center shadow-sm">
                    <Bell className="w-8 h-8 text-brand-blue mb-4" />
                    <h3 className="text-lg font-bold mb-2 text-gray-900">Track prices for this trip</h3>

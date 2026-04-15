@@ -25,6 +25,7 @@ export interface FlightOption {
   stops: number;
   tags?: string[];
   layovers?: string[];
+  providers?: FareProvider[];
 }
 
 export interface FareProvider {

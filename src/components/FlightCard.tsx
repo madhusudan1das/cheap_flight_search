@@ -54,20 +54,32 @@ export const FlightCard = ({ flight }: Props) => {
           </div>
        </div>
 
-       <div className="md:w-[220px] flex flex-col items-end justify-center pl-0 md:pl-6 pt-4 md:pt-0">
-          <button onClick={() => toggleFavorite(flightId)} className={`${isFav ? 'text-red-500' : 'text-gray-400 hover:text-red-500'} mb-2 transition-colors`}>
-            <Heart className="w-5 h-5" fill={isFav ? "currentColor" : "none"} />
-          </button>
-          {flight.tags && flight.tags.length > 0 && (
-             <div className="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded mb-1">{flight.tags[0]}</div>
-          )}
-          <div className="flex items-center gap-1">
-             <div className="text-xs text-text-gray">from</div>
-             <div className="text-2xl font-bold text-gray-900 tracking-tight">₹{flight.price.toLocaleString('en-IN')}</div>
+       <div className="md:w-[300px] flex flex-col pl-0 md:pl-6 pt-4 md:pt-0 gap-2">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              {flight.tags && flight.tags.length > 0 && (
+                 <div className="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded border border-green-200 uppercase tracking-widest">{flight.tags[0]}</div>
+              )}
+            </div>
+            <button onClick={() => toggleFavorite(flightId)} className={`${isFav ? 'text-red-500' : 'text-gray-300 hover:text-red-500'} transition-colors`}>
+              <Heart className="w-5 h-5" fill={isFav ? "currentColor" : "none"} />
+            </button>
           </div>
-          <button onClick={() => navigate(`/book/${flightId}`)} className="bg-brand-blue hover:bg-primary-hover active:scale-95 transition-all w-full py-3 mt-4 rounded-xl text-white font-bold flex justify-center items-center gap-2 shadow-md hover:shadow-lg text-sm">
-            Select <ArrowRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
-          </button>
+          
+          <div className="flex flex-col gap-2 w-full">
+            {flight.providers?.map((provider, i) => (
+              <div key={provider.id} className={`flex justify-between items-center p-2.5 rounded-lg border transition-all ${i === 0 ? 'bg-green-50/50 border-green-300 shadow-sm' : 'border-gray-100 hover:border-gray-300 hover:shadow-sm'}`}>
+                  <div>
+                    <div className="font-bold text-sm text-gray-900">{provider.name}</div>
+                    {i === 0 && <div className="text-[10px] text-green-600 font-bold">Cheapest Route</div>}
+                  </div>
+                  <div className="flex items-center gap-3">
+                      <span className={`font-black tracking-tight ${i===0 ? 'text-green-700 text-lg' : 'text-gray-900'}`}>₹{provider.price.toLocaleString('en-IN')}</span>
+                      <button className="text-white bg-brand-blue hover:bg-primary-hover px-3 py-1.5 rounded-md text-xs font-bold transition-transform active:scale-95 shadow-sm">Book</button>
+                  </div>
+              </div>
+            ))}
+          </div>
        </div>
     </div>
   );
