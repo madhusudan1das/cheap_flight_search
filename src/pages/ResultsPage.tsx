@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FilterSidebar } from '../components/FilterSidebar';
 import { FlightCard } from '../components/FlightCard';
-import { DatePriceScroller } from '../components/DatePriceScroller';
 import { generateDatePrices } from '../data/mockData';
 import { useFlightStore } from '../store/useFlightStore';
 import { Bell } from 'lucide-react';
@@ -31,7 +30,7 @@ export const ResultsPage = () => {
   return (
     <div className="bg-bg-light min-h-screen">
       <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-6">
-         <DatePriceScroller prices={prices} selectedDate={date} />
+
          <div className="flex gap-6 mt-6 relative">
             <FilterSidebar />
             <div className="flex-1 pb-16">
